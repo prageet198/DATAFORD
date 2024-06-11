@@ -1,0 +1,12 @@
+LEVEL:- Medium
+COMPANY:- Meta
+
+QUESTION:- You are part of the content strategy team at Instagram, and have access to a table called posts. What percentage of posts in December 2023 received more than 500 likes?
+
+Table is:- posts
+
+Solution:- In PostgreSQL
+SELECT 
+1.00 * COUNT(CASE WHEN like_count>500 THEN 1 END)/COUNT(post_id) AS perc
+FROM posts 
+WHERE EXTRACT(Year FROM post_time)='2023' AND EXTRACT(Month FROM post_time)='12'
