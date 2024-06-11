@@ -1,0 +1,12 @@
+QUESTION:- You are working for Instagram Shop and your team wants to know what is the most popular product. 
+Write a SQL query to find the 1 product with the highest number of orders. In case of a tie in order counts, select the product that comes first in alphabetical order.
+
+Tables are:- orders, products
+
+Solution:- In PostgreSQL
+WITH allProducts AS (
+SELECT product_id, COUNT(*) AS totalOrders, products.name
+FROM orders INNER JOIN products ON orders.product_id=products.id
+GROUP BY product_id, products.name
+)
+SELECT name FROM allProducts ORDER BY totalOrders DESC, name ASC LIMIT 1
