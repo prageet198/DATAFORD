@@ -1,0 +1,31 @@
+LEVEL:- EASY
+COMPANY:- Airbnb
+
+QUESTION:- Create a query to find out how many times each room has been booked and calculate the total revenue generated from those reservations, 
+considering the number of nights booked. Display the results with the room having the highest bookings at the top, followed by descending order based on the booking frequency.
+
+Tables are:- rooms , rentalHistory 
+
+Solution 1:- In PostgreSQL
+With details AS (
+SELECT rooms.room_id, rooms.name, rooms.description,
+(price * rentalHistory.number_nights) AS totalSpent
+FROM rooms INNER JOIN rentalHistory
+ON rooms.room_id=rentalHistory.room_id
+)
+SELECT name, description, COUNT(*) AS totalBooking,
+SUM(totalSpent) AS totalEarning
+FROM details
+GROUP BY name, description
+ORDER BY COUNT(*) DESC
+
+Solution 2:- In PostgreSQL
+SELECT 
+    r.name, 
+    r.description, 
+    COUNT(rh.rental_id) AS number_of_bookings,
+    SUM(rh.number_nights*r.price) AS total_earnings 
+FROM rooms r 
+INNER JOIN rentalHistory rh ON r.room_id = rh.room_id
+GROUP BY 1,2
+ORDER BY 3 DESC;
