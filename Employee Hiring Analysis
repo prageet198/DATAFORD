@@ -1,0 +1,11 @@
+LEVEL:- EASY
+COMPANY:- Deloitte
+
+QUESTION:- Write a query to display the number of employees hired during the months of February to August 2023 (including August).
+
+Table is employees
+
+Solution:- In PostgreSQL
+SELECT COUNT(*) AS totalEmp
+FROM employees
+WHERE EXTRACT(Year FROM joining_date)='2023' AND EXTRACT(Month FROM joining_date) IN ('2','3','4','5','6','7','8')
