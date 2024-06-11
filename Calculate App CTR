@@ -1,0 +1,38 @@
+LEVEL:- EASY
+COMPANY:- DATAFORD
+QUESTION:- Write a query to calculate the click-through rate (CTR %) of an app in 2022. The CTR is defined as the percentage of clicks out of all impressions made in the year 2022.
+Output the results in percentages rounded to 2 decimal places.
+Notes:
+    The percentage of click-through rate = 100.0 * Number of clicks / Number of impressions
+    To avoid integer division, you should multiply the click-through rate by 100.0, not 100.
+	
+Table is:- events 
+
+Solution 1:- In PostgreSQL
+WITH products AS(
+SELECT app_id,
+(CASE WHEN event_type='impression' THEN '1' ELSE '0' END) AS totalImpression,
+(CASE WHEN event_type='click' THEN '1' ELSE '0' END) AS totalClick
+FROM events WHERE EXTRACT (YEAR FROM timestamp)='2022'
+)
+SELECT app_id,
+ROUND(100.0 * ((SUM (CAST (totalClick AS decimal)))/(SUM (CAST (totalImpression AS decimal)))),2) AS ctr
+FROM products
+GROUP BY app_id
+ORDER BY app_id
+
+Solution 2:- In PostgreSQL
+WITH my_events AS (
+
+SELECT 
+    app_id, 
+    COUNT(CASE WHEN event_type = 'click' THEN 1 END) AS nb_of_clicks,
+    COUNT(CASE WHEN event_type = 'impression' THEN 1 END) AS nb_of_impressions
+FROM events
+WHERE DATE_TRUNC('year',timestamp) = '2022-01-01'
+GROUP BY 1)
+
+SELECT
+    app_id,
+    ROUND(100.00*nb_of_clicks/nb_of_impressions,2) AS ctr
+FROM my_events
