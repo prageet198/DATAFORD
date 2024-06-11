@@ -1,0 +1,27 @@
+LEVEL:- EASY
+COMPANY:- Amazon
+
+QUESTION:- Amazon has partnered with multiple airlines to enhance their in-flight entertainment systems. As part of this initiative, 
+you are tasked with developing a feature that suggests movies from Amazon's content database.
+
+For flight 101, suggest movies with runtimes less than or equal to the flight's duration.
+
+Tables are:- entertainment_catalog , flight_schedule 
+
+Solution 1:- In PostgreSQL
+SELECT
+    fs.flight_id,
+    ec.movie_id,
+    ec.duration AS movie_duration
+FROM flight_schedule fs
+INNER JOIN entertainment_catalog ec ON ec.duration <= fs.flight_duration
+WHERE
+    fs.flight_id = 101;
+
+
+Solution 2:- In PostgreSQL
+SELECT '101' AS flight_id, movie_id, duration
+FROM entertainment_catalog
+WHERE duration <= (SELECT flight_duration
+FROM flight_schedule 
+WHERE flight_id='101')
