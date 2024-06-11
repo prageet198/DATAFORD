@@ -1,0 +1,16 @@
+TITLE:-Average Review Ratings
+LEVEL:- EASY
+COMPANY:- Amazon
+QUESTION:- You are given a reviews table containing reviews of various products. Write a query to find the average stars for each product every month.
+Additional requests:
+    The month should be in numerical value.
+    The star rating should be rounded to two decimal places.
+    The output should be sorted by month followed by the product id.
+
+Table is:- reviews 
+
+Solution:- In PostgreSQL
+SELECT EXTRACT(MONTH FROM submit_date) AS mnt, product_id, ROUND(AVG(stars),2) AS avgMonthlyRating
+FROM reviews
+GROUP BY EXTRACT(MONTH FROM submit_date),product_id 
+ORDER BY EXTRACT(MONTH FROM submit_date),product_id
