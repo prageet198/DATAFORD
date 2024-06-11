@@ -1,0 +1,13 @@
+LEVEL:- EASY
+COMPANY:- Amazon
+
+QUESTION:- Calculate the total number of orders each week, considering only those received during the first quarter of 2023.
+
+Table is:- orders_analysis 
+
+Solution:- In PostgreSQL
+SELECT week, SUM(quantity) AS totalSales
+FROM orders_analysis
+WHERE EXTRACT (QUARTER FROM week)='1' AND EXTRACT(YEAR FROM week::date) = 2023
+GROUP BY week
+ORDER BY week
