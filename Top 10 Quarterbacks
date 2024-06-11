@@ -1,0 +1,15 @@
+LEVEL:-EASY
+COMPANY:-ESPN
+
+QUESTION:- Identify the top 10 quarterbacks with the highest points in a single game in 2016. Output the quarterback along with the corresponding game points. 
+Organize records based on game points in descending order and present only the top 10 rows, without considering any ties in game points that might result in more 
+than 10 quarterbacks in the output.
+
+Table is:- qbstats_2015_2016
+
+Solution:- In PostgreSQL
+SELECT qb, game_points
+FROM qbstats_2015_2016 
+WHERE year='2016'
+ORDER BY game_points DESC
+LIMIT 10
