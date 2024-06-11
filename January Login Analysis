@@ -1,0 +1,17 @@
+LEVEL:- EASY
+COMPANY:- Dataford
+
+QUESTION:- Write a query to retrieve the list of unique worker IDs who logged in between January 10th and January 25th, 2023.
+
+Table is :- user_logins
+
+Solution 1:- In PostgreSQL
+SELECT DISTINCT(worker_id) AS uniqueIds
+FROM user_logins
+WHERE EXTRACT(Day FROM login_timestamp) BETWEEN '10' AND '25' AND EXTRACT(Month FROM login_timestamp)='1' AND EXTRACT(Year FROM login_timestamp)='2023'
+
+Solution 2:- In PostgreSQL
+SELECT DISTINCT worker_id
+FROM user_logins
+WHERE DATE(login_timestamp) BETWEEN '2023-01-10' AND '2023-01-25'
+ORDER BY 1 DESC
