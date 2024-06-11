@@ -1,0 +1,12 @@
+LEVEL:- EASY
+COMPANY:- Instacart
+
+QUESTION:- Write an SQL query to report all customers who never order anything. Order all the names by alphabetical order.
+
+Tables are:- customers , orders
+
+Solution:- In PostgreSQL
+SELECT customers.name
+FROM customers LEFT JOIN orders ON customers.id=orders.customerId
+WHERE orders.customerId IS NULL
+ORDER BY customers.name
