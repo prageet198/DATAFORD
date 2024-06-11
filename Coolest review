@@ -1,0 +1,14 @@
+LEVEL:- EASY
+COMPANY:- Yelp
+
+QUESTION:- Identify the review_text with the highest count of 'cool' votes. In case of a tie, select the first occurrence. Output both the business name and 
+the review text associated with the highest number of 'cool' votes.
+
+Table is:- yelp_reviews 
+
+Solution:- In PostgreSQL
+
+SELECT business_name, review_text, cool
+FROM yelp_reviews
+ORDER BY cool DESC
+LIMIT 1
