@@ -1,0 +1,17 @@
+LEVEL:- EASY
+COMPANY:- Airbnb
+
+QUESTION:- Imagine you're a Data Analyst at Airbnb. The product manager wants you to figure out if a guest's gender affects the average review score they give. 
+You'll use the "from_type" column to identify guest reviews. "from_user" is the user_id that made the review and "to_user" is the user_id that received the review.
+
+Your job is to show which gender tends to give higher review scores. The end result will be a clear list of genders and their average review scores. 
+Round your results to 3 decimal points.
+
+Tables are:- reviews , guests 
+
+Solution:- In PostgreSQL
+SELECT guests.gender, ROUND(AVG(review_score),3) AS abgScores
+FROM reviews INNER JOIN guests ON reviews.from_user=guests.guest_id AND reviews.from_type='guest'
+GROUP BY guests.gender
+ORDER BY ROUND(AVG(review_score),3) DESC
+LIMIT 1
