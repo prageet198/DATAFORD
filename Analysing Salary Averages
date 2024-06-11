@@ -1,0 +1,13 @@
+LEVEL:- EASY
+COMPANY:- Google
+
+QUESTION:- You're given a dataset from Google called google_salaries containing information about various individuals, including their education levels and salaries.
+
+Your goal is to calculate the average salary for each level of education. Round your results to 1 decimal points.
+
+Table is:- google_salaries
+
+Solution:- In PostgreSQL
+SELECT education, ROUND(AVG(salary),1) AS avgSalary
+FROM google_salaries
+GROUP BY education
