@@ -1,0 +1,19 @@
+LEVEL:- EASY
+COMPANY:- Airbnb
+QUESTION:-As part of your role as a Data Analyst at Airbnb, you are given an interesting challenge. The team is interested in identifying the top 3 hosts 
+who have generated the highest average revenue per booking in the year 2022. Round your results to 2 decimal points.
+
+Tables are:- hosts, bookings
+
+Solution:- In PostgreSQL
+With bookingYear AS(
+SELECT host_id, EXTRACT(YEAR FROM booking_date) AS bookingYear,booking_revenue  
+FROM bookings
+),
+hostName AS(
+SELECT hosts.host_name, ROUND(AVG(booking_revenue),2) AS avgRevenue
+FROM bookingYear INNER JOIN hosts ON bookingYear.host_id=hosts.host_id
+WHERE bookingYear='2022'
+GROUP BY hosts.host_name
+)
+SELECT * FROM hostName ORDER BY avgRevenue DESC LIMIT 3
