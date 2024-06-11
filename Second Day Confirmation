@@ -1,0 +1,19 @@
+LEVEL:- EASY
+COMPANY:- Tiktok
+
+QUESTION:-Assuming that the emails table contains information about the email addresses of new TikTok users and the texts table contains information about the text 
+confirmation received by each user, write a SQL query that retrieves the IDs of the users who did not confirm on the first day of sign-up, but confirmed on the second day.
+
+Tables are:- emails , texts 
+
+Solution 1:- In PostgreSQL
+SELECT user_id
+FROM emails INNER JOIN texts ON emails.email_id=texts.email_id
+WHERE signup_action='Confirmed' AND (texts.action_date - signup_date)='1'
+ORDER BY texts.email_id
+
+Solution 2:- In PostgreSQL
+SELECT DISTINCT user_id
+FROM emails e
+INNER JOIN texts t ON e.email_id = t.email_id
+WHERE  t.signup_action = 'Confirmed' AND t.action_date = e.signup_date + INTERVAL '1 day'
