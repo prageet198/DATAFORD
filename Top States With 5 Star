@@ -1,0 +1,15 @@
+TITLE:-Top States With 5 Star
+LEVEL:- EASY
+COMPANY:- Yelp
+QUESTION:-Write a query to find the top 3 states with the most 5-star reviews. Your output should include the state name and the number of 5-star reviews they received. 
+In case of a tie between states, you should rank them by their alphabetical order.
+
+Tables are:- businesses , reviews 
+
+Solution:- In PostgreSQL
+SELECT businesses.state, COUNT(*) AS total5StarRatings
+FROM reviews INNER JOIN businesses  ON reviews.business_id=businesses.business_id
+WHERE rating='5'
+GROUP BY businesses.state
+ORDER BY COUNT(*) DESC
+LIMIT 3
