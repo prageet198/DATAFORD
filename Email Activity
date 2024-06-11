@@ -1,0 +1,27 @@
+LEVEL:- EASY
+COMPANY:- Google
+
+QUESTION:- Establish the email activity rank for each user, considering the total number of emails sent. The user sending the most emails secures rank 1 and so on. 
+Output includes user, total emails, and their activity rank. Records are organized by total emails in descending order, and for users with the same email count, 
+alphabetical sorting is applied.
+
+Table is:- google_gmail_emails
+
+Solution 1:- In PostgreSQL
+WITH allDetails AS(
+SELECT from_user,
+COUNT(*) AS totalEmails
+FROM google_gmail_emails 
+GROUP BY from_user
+)
+
+SELECT *, ROW_NUMBER() OVER (ORDER BY totalEmails DESC, from_user) AS ranked FROM allDetails
+
+Solution 2:-
+SELECT  
+        from_user, 
+        COUNT(*) as total_emails, 
+        ROW_NUMBER() OVER ( order by COUNT(*) desc, from_user asc) AS rank
+    FROM google_gmail_emails 
+    GROUP BY from_user
+    ORDER BY 2 DESC;
