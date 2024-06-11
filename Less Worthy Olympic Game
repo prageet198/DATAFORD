@@ -1,0 +1,15 @@
+LEVEL:- EASY
+COMPANY:- ESPN
+
+QUESTION:-Determine the Olympic game with the highest number of participants who didn't earn a medal. Output includes the Olympic game name, 
+which is a combination of the year and season, along with the corresponding count of athletes without medals.
+
+Table is:- olympics_athletes_events 
+
+Solution:- In PostgreSQL
+SELECT games, COUNT(DISTINCT name) AS totalAthletes
+FROM olympics_athletes_events
+WHERE medal IS NULL
+GROUP BY games
+ORDER BY COUNT(DISTINCT name) DESC
+LIMIT 1
