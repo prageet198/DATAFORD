@@ -1,0 +1,10 @@
+LEVEL:- EASY
+COMPANY:- Alibaba
+
+QUESTION:- Write a SQL query to calculate the average number of items per order on Alibaba's platform. The result should be rounded to 1 decimal place.
+
+Table is items_per_order 
+
+Solution:- In PostgreSQL
+SELECT ROUND(1.00*SUM(item_count * order_occurrences)/SUM(order_occurrences), 1) AS average_items_per_order
+FROM items_per_order;
