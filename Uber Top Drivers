@@ -1,0 +1,15 @@
+LEVEL:- EASY
+COMPANY:- Uber
+
+QUESTION:- Uber has a database table called trips that stores information about each trip taken by customers. You've been asked to find the top 3 drivers with the highest revenue. 
+Assume that Uber takes a 20% cut on each trip. Round your results to 0 decimals.
+For this interview question, assume there are no ties in drivers' revenue.
+
+Table is:- trips
+
+Solution:- In PostgreSQL
+SELECT driver_id, ROUND(SUM(cost * 0.80)) AS totalRevenue
+FROM trips 
+GROUP BY driver_id
+ORDER BY SUM(cost * 0.80) DESC
+LIMIT 3
