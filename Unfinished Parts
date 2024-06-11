@@ -1,0 +1,9 @@
+TITLE:-Unfinished Parts
+LEVEL:- EASY
+COMPANY:- Tesla
+QUESTION:-Write a query to find all the parts that have been initiated for assembly but remain unfinished.
+
+Table is:- parts_assembly
+
+Solution:- In PostgreSQL
+SELECT part FROM parts_assembly WHERE finish_date IS NULL
