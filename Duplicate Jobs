@@ -1,0 +1,16 @@
+TITLE:-Duplicate Jobs
+LEVEL:- EASY
+COMPANY:- Linkedin
+QUESTION:-Write a SQL query to find the number of companies that have posted duplicate job listings. Duplicate job listings refer to two jobs at the same 
+company with the same title and description.
+
+Table is:- job_listings
+
+Solution:- In PostgreSQL
+With duplicateCompanies AS(
+SELECT company_id
+FROM job_listings
+GROUP BY company_id, title, description
+HAVING COUNT(*)>1
+)
+SELECT COUNT(*) AS totalDuplicates FROM duplicateCompanies
