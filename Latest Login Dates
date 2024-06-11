@@ -1,0 +1,15 @@
+LEVEL:- EASY
+COMPANY:- Amazon
+
+QUESTION:-Write a SQL query to retrieve the latest login date for each video game player from the database.
+
+The result should include the player's unique identifier and their corresponding latest login date. Arrange the results based on the proximity of the login dates, 
+so that players with the closest login dates appear first.
+
+Table is:- player_login 
+
+Solution:- In PostgreSQL
+SELECT player_id, MAX(login_date) AS latestLogin 
+FROM player_login
+GROUP BY player_id
+ORDER BY MAX(login_date) DESC
