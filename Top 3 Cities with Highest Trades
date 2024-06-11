@@ -1,0 +1,13 @@
+TITLE:-Top 3 Cities with Highest Trades
+LEVEL:- EASY
+COMPANY:- Robinhood
+
+Tables are:- users , trades
+
+Solution:- In PostgreSQL
+SELECT city, COUNT(*) AS totalCompletedOrders
+FROM trades INNER JOIN users ON trades.user_id=users.user_id
+WHERE status='Completed'
+GROUP BY city
+ORDER BY COUNT(*) DESC
+LIMIT 3;
