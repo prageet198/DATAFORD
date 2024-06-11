@@ -1,0 +1,15 @@
+TITLE:-Airbnb Apartment Count
+LEVEL:- EASY
+COMPANY:- Airbnb
+QUESTION:- Write a query to find the number of apartments per nationality that are owned by people under 30 years old. Output the nationality along with the number of apartments.
+
+Tables are:- airbnb_hosts , airbnb_units 
+
+Solution:- In PostgreSQL
+SELECT 
+    h.nationality, 
+    COUNT(u.unit_id) AS apartments_count
+FROM airbnb_hosts h 
+INNER JOIN airbnb_units u ON h.host_id = u.host_id 
+WHERE h.age < 30 
+GROUP BY 1;
