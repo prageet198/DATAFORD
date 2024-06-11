@@ -1,0 +1,11 @@
+LEVEL:- EASY
+COMPANY:- Google
+
+QUESTION:- Identify doctors with the last name 'Johnson' in the employee list. The output should include both their first and last names.
+
+Table is:- employee_list 
+
+Solution:- In PostgreSQL
+SELECT first_name, last_name
+FROM employee_list 
+WHERE profession='Doctor' AND last_name='Johnson'
