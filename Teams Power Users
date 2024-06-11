@@ -1,0 +1,20 @@
+LEVEL:-EASY
+COMPANY:- Microsoft
+
+QUESTION:-Write a SQL query to find the top 2 power users who sent the most messages on Microsoft Teams in August 2022. Display the IDs of these 2 users along 
+with the total number of messages they sent.
+
+Table is:- messages 
+
+Solution:- In PostgreSQL
+WITH yearMonth AS (
+SELECT message_id, sender_id, EXTRACT(MONTH FROM sent_date) AS mnt, EXTRACT(YEAR FROM sent_date) AS yrs
+FROM messages
+)
+
+SELECT sender_id, COUNT(*) AS totalMsgCount
+FROM yearMonth
+WHERE mnt='8' AND yrs='2022'
+GROUP BY sender_id
+ORDER BY COUNT(*) DESC
+LIMIT 2;
