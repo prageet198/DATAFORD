@@ -1,0 +1,12 @@
+TITLE:-Matching hosts and guests
+LEVEL:- EASY
+COMPANY:- Airbnb
+QUESTION:- Write a query to find matching hosts and guests pairs in a way that they are both of the same gender and nationality. Output the host id and the guest id of matched pairs.
+
+Tables are:- airbnb_hosts, airbnb_guests 
+
+Solution:- In PostgreSQL
+SELECT airbnb_hosts.host_id, airbnb_guests.guest_id
+FROM airbnb_hosts INNER JOIN airbnb_guests
+ON airbnb_hosts.nationality=airbnb_guests.nationality 
+AND airbnb_hosts.gender=airbnb_guests.gender
