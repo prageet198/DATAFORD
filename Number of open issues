@@ -1,0 +1,11 @@
+LEVEL:- EASY
+COMPANY:- Github
+
+QUESTION:- How many issues are currently open in the avocado-toast repository, and were created on the month of October 2020?
+
+Table is issues
+
+Solution:- In PostgreSQL
+SELECT COUNT(*) AS totalOPenIssues
+FROM issues 
+WHERE state='open' AND EXTRACT(Month FROM created_at)='10' AND EXTRACT(Year FROM created_at)='2020'
