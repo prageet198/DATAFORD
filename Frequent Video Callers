@@ -1,0 +1,17 @@
+LEVEL:- EASY
+COMPANY:- Meta
+
+QUESTION:-How many users from Canada have made calls to at least 3 people.
+
+Tables are:- users , calls 
+
+Solution:- In PostgreSQL
+WITH canadaUsers AS (
+SELECT users.user_id
+FROM users INNER JOIN calls ON users.user_id=calls.caller_id
+WHERE country='Canada'
+GROUP BY users.user_id
+HAVING COUNT(DISTINCT recipient_id) >=3
+ORDER BY users.user_id
+)
+SELECT COUNT(*) AS totalUsers FROM canadaUsers
