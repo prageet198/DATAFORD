@@ -1,0 +1,12 @@
+LEVEL:- EASY
+COMPANY:- American Airlines
+
+QUESTION:- Identify the top 5 longest US flights by distance
+
+Table is :- us_flights 
+
+Solution:- In PostgreSQL
+SELECT DISTINCT origin, dest, distance
+FROM us_flights
+ORDER BY distance DESC
+LIMIT 5
