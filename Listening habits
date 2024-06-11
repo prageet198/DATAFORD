@@ -1,0 +1,13 @@
+LEVEL:- EASY
+COMPANY:- Spotify
+
+QUESTION:- You're assigned to analyze a Spotify-like dataset that records user listening habits. For each user, compute the total listening time and the count of unique 
+songs they've listened to. Round the total listening duration to the nearest whole minute.
+
+Table is:- listening_habits 
+
+Solution:- In PostgreSQL
+SELECT COUNT(DISTINCT(song_id)) AS uniqueSongs, user_id, ROUND(SUM(listen_duration)) AS totalDuration
+FROM listening_habits
+GROUP BY user_id
+ORDER BY user_id;
