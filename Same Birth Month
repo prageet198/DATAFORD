@@ -1,0 +1,24 @@
+LEVEL:- Medium
+COMPANY:- Block
+
+QUESTION:- Determine the count of employees within each profession sharing the same birth month. The output should include the profession, birth month, 
+and the number of employees from that department who were born in that month.
+
+Table is:- employee_list 
+
+Solution:- In PostgreSQL
+SELECT profession,
+COUNT(CASE WHEN birth_month='1' THEN 1 END) AS month_1,
+COUNT(CASE WHEN birth_month='2' THEN 1 END) AS month_2,
+COUNT(CASE WHEN birth_month='3' THEN 1 END) AS month_3,
+COUNT(CASE WHEN birth_month='4' THEN 1 END) AS month_4,
+COUNT(CASE WHEN birth_month='5' THEN 1 END) AS month_5,
+COUNT(CASE WHEN birth_month='6' THEN 1 END) AS month_6,
+COUNT(CASE WHEN birth_month='7' THEN 1 END) AS month_7,
+COUNT(CASE WHEN birth_month='8' THEN 1 END) AS month_8,
+COUNT(CASE WHEN birth_month='9' THEN 1 END) AS month_9,
+COUNT(CASE WHEN birth_month='10' THEN 1 END) AS month_10,
+COUNT(CASE WHEN birth_month='11' THEN 1 END) AS month_11,
+COUNT(CASE WHEN birth_month='12' THEN 1 END) AS month_12
+FROM employee_list 
+GROUP BY profession
