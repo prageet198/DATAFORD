@@ -1,0 +1,27 @@
+LEVEL:- Medium
+COMPANY:- Netflix
+
+QUESTION:- In the database, user IDs, video IDs, and watch dates are recorded when new users start watching videos. The goal is to identify the top 3 videos that 
+most users have watched as their first 3 videos. The output should include the video ID and the count of how many times it has been watched as users' first 3 videos. 
+If there's a tie, all videos in the top 3 will be included.
+
+Table is:- user_video_watch
+
+Solution:- In Postgre
+WITH allRankedData AS(
+SELECT user_id, video_id,
+ROW_NUMBER() OVER (PARTITION BY user_id ORDER  BY watched_at) AS rankNo
+FROM user_video_watch
+),
+top3UserWiseVideos AS(
+SELECT * 
+FROM allRankedData 
+WHERE rankNo<=3
+),
+overAllRank AS (
+SELECT video_id, COUNT(*) AS wathCount,
+RANK() OVER(ORDER BY COUNT(*) DESC) AS ranked
+FROM top3UserWiseVideos
+GROUP BY video_id
+)
+SELECT video_id, wathcount FROM overAllRank WHERE ranked<=3
