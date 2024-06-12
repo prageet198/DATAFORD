@@ -1,0 +1,39 @@
+LEVEL:- Medium
+COMPANY:- Siemens
+
+QUESTION:- You're tasked with finding employees with the highest and lowest salaries. Your output should feature the employee's ID, salary, and department.
+
+Additionally, include a column named 'salary_type' categorizing the results as either 'Highest Salary' or 'Lowest Salary' based on their respective salary rankings.
+
+Tables are:- worker , title 
+Solution 1:- In Postgresql
+WITH overallSalary AS (
+SELECT MAX(salary) AS maxSalary, MIN(salary) AS minSalary
+FROM worker
+),
+combineAll AS(
+SELECT worker_id, salary, department,
+CASE WHEN salary=maxsalary THEN 'Highest Salary'
+     WHEN salary=minsalary THEN 'Lowest Salary' END AS salaryType
+FROM overallSalary,worker
+)
+SELECT * FROM combineAll WHERE salaryType IS NOT NULL ORDER BY salary
+
+Solution 2:- In Postgresql
+WITH cte AS
+  (SELECT *,
+          RANK() OVER(
+                      ORDER BY salary) AS lowest_sal,
+          RANK() OVER(
+                      ORDER BY salary DESC) AS highest_sal
+   FROM worker)
+SELECT worker_id,
+       salary,
+       department,
+       CASE
+           WHEN highest_sal = 1 THEN 'Highest Salary'
+           ELSE 'Lowest Salary'
+       END AS salary_type
+FROM cte
+WHERE lowest_sal = 1
+  OR highest_sal = 1
