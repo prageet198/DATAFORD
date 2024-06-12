@@ -1,0 +1,45 @@
+LEVEL:- Medium
+COMPANY:- L&T
+
+QUESTION:- Write a query to to find the names of the employees with the highest and lowest salaries in each department. For this question, 
+let's assume that everyone at the company has different salaries.
+
+Table is:- employee 
+
+Solution 1:- In Postgre
+WITH allMaxSalary AS(
+SELECT employee_id, dep_id, employee_name,
+ROW_NUMBER() OVER (PARTITION BY dep_id ORDER BY salary DESC) AS maxSalary
+FROM employee ORDER BY dep_id
+),
+onlyMaxSalary AS(
+SELECT employee_id, dep_id, employee_name FROM allMaxSalary WHERE maxSalary='1'
+),
+allMinSalary AS(
+SELECT employee_id, dep_id, employee_name,
+ROW_NUMBER() OVER (PARTITION BY dep_id ORDER BY salary) AS minSalary
+FROM employee ORDER BY dep_id
+),
+onlyMinSalary AS(
+SELECT employee_id, dep_id, employee_name FROM allMinSalary WHERE minSalary='1'
+)
+SELECT onlyMaxSalary.dep_id, onlyMaxSalary.employee_name AS maxSalEmp,
+onlyMinSalary.employee_name AS minSalEmp
+FROM onlyMaxSalary INNER JOIN onlyMinSalary
+ON onlyMaxSalary.dep_id=onlyMinSalary.dep_id
+
+Solution-2:- In Postgre
+WITH my_employees AS (
+SELECT
+employee_name,
+dep_id,
+ROW_NUMBER() OVER (PARTITION BY dep_id ORDER BY salary DESC) AS rank_desc,
+ROW_NUMBER() OVER (PARTITION BY dep_id ORDER BY salary) AS rank_asc
+FROM employee
+)
+
+SELECT
+dep_id,
+CASE WHEN rank_desc = 1 THEN employee_name END AS max_sal_emp,
+CASE WHEN rank_asc = 1 THEN employee_name END AS min_sal_emp
+FROM my_employees
