@@ -1,0 +1,48 @@
+LEVEL:- Medium
+COMPANY:- Shopify
+
+QUESTION:- Your goal is to calculate the total active hours for each user. You should use the start and end times of user sessions, defined by the session state: '1' 
+for session start and '0' for session end.
+
+Table is user_sessions 
+
+Solution-1:- In Postgre
+With allData AS(
+SELECT *,
+LAG (timestamp) OVER (PARTITION BY customer_id) AS previousStartTime
+FROM user_sessions 
+ORDER BY customer_id
+),
+timeDifference AS(
+SELECT customer_id, ROUND(ABS(EXTRACT(EPOCH FROM (timestamp::time - previousstarttime::time)) / 60)) AS time_difference_minutes
+FROM allData 
+WHERE state='0'
+)
+SELECT customer_id, ROUND(SUM(time_difference_minutes)/60,16) AS totalTime
+FROM timeDifference
+GROUP BY customer_id
+
+Solution-2:- In Postgre
+WITH my_sessions AS (
+SELECT
+    *,
+    timestamp AS start_session,
+    LEAD(timestamp) OVER(PARTITION BY customer_id
+    ORDER BY timestamp) AS end_session
+
+FROM user_sessions),
+
+my_duration AS (
+SELECT 
+    customer_id,
+    start_session,
+    end_session,
+    EXTRACT(EPOCH FROM end_session-start_session)/3600 AS nb_hours
+FROM my_sessions
+WHERE state = 1)
+
+SELECT
+    customer_id,
+    SUM(nb_hours) AS total_hours
+FROM my_duration
+GROUP BY 1;
