@@ -1,0 +1,20 @@
+LEVEL:- Medium
+COMPANY:- Amazon
+
+QUESTION:- Using the customer_purchase table, your goal is to list all customers that made at least 2 purchases in any period of six months.
+
+Table is:- customer_purchase 
+
+Solution-1:- In Postgre
+SELECT customer_id
+FROM customer_purchase 
+GROUP BY customer_id
+HAVING COUNT(*)>=2 AND (EXTRACT(MONTH FROM MAX(purchased_at)) - EXTRACT(MONTH FROM MIN(purchased_at)))<=6
+ORDER BY customer_id
+
+Solution-2:- In Postgre
+SELECT DISTINCT tp1.customer_id
+FROM customer_purchase tp1
+INNER JOIN customer_purchase tp2 ON tp1.customer_id = tp2.customer_id
+    AND tp1.purchased_at > tp2.purchased_at
+    AND tp1.purchased_at <= (tp2.purchased_at + INTERVAL '6 months')
