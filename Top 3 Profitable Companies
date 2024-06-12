@@ -1,0 +1,14 @@
+LEVEL:- Medium
+COMPANY:- Forbes
+
+QUESTION:- Identify the top 3 most profitable companies globally. Output the result along with the corresponding company name. Sort the result based on profits in descending order.
+
+Table is:- forbes_global_2010_2014 
+
+Solution:- In Postgresql
+WITH overallProfit AS (
+SELECT company, profits,
+RANK() OVER (ORDER BY profits DESC) AS ranked
+FROM forbes_global_2010_2014
+)
+SELECT company, profits FROM overallProfit WHERE ranked <=3
