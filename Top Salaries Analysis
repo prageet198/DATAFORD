@@ -1,0 +1,16 @@
+LEVEL:- Medium
+COMPANY:- Amazon
+
+QUESTION:- You've been tasked with identifying the job titles of the highest-paid employees.
+
+Your output should list the job title or titles with the highest salary, considering the possibility of multiple titles sharing the same salary.
+
+Tables are:- worker ,title 
+
+Solution:- In Postgre
+WITH allTitles AS (
+SELECT title.worker_title, RANK() OVER (ORDER BY salary DESC) AS overallRanked 
+FROM worker INNER JOIN title
+ON worker.worker_id=title.worker_ref_id
+)
+SELECT worker_title FROM allTitles WHERE overallRanked='1'
