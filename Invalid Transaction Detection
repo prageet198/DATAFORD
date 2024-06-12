@@ -1,0 +1,34 @@
+LEVEL:- Medium
+COMPANY:- Chase
+
+QUESTION:- Bank of Ireland has instructed to identify unauthorized transactions during December 2022.
+
+A transaction is considered invalid if it falls outside the bank's regular hours: Monday to Friday 09:00 - 16:00, closed on Saturdays, Sundays, 
+and Irish Public Holidays (25th and 26th December).
+
+Your task is to find the transaction IDs of such invalid transactions.
+
+Table is:- transactions 
+
+Solution-1:- In Postgre
+WITH allData AS(
+SELECT *, EXTRACT(DOW FROM time_stamp) AS dayOfWeek, EXTRACT(HOUR FROM time_stamp) AS hrsTiming,EXTRACT(DAY FROM time_stamp) AS extractedDate
+FROM transactions 
+WHERE EXTRACT(YEAR FROM time_stamp)='2022' AND EXTRACT(MONTH FROM time_stamp)='12'
+)
+SELECT transaction_id 
+FROM allData
+WHERE dayofweek IN (0,6) OR (dayofweek NOT IN (0,6) AND (hrstiming<9 OR hrstiming>=16)) OR (extractedDate IN (25,26))
+
+Solution-2:- In Postgre
+SELECT transaction_id
+FROM transactions
+WHERE 
+    DATE_TRUNC('month', time_stamp) = '2022-12-01'
+    AND 
+    (
+    EXTRACT(ISODOW FROM time_stamp) IN (6, 7)
+    OR EXTRACT(DAY FROM time_stamp) IN (25, 26)
+    OR EXTRACT(HOUR FROM time_stamp) >= 16
+    OR EXTRACT(HOUR FROM time_stamp) < 9
+    )
