@@ -1,0 +1,25 @@
+LEVEL:- Medium
+COMPANY:- Doordash
+
+QUESTION:- For each month of 2021, calculate what percentage of restaurants, out of these that fulfilled any orders in a given month, fulfilled more than 100$ in monthly sales?
+
+Table is:- delivery_orders 
+WITH my_sales AS (
+SELECT 
+    EXTRACT(MONTH FROM order_placed_time) AS month, 
+    restaurant_id, 
+    SUM(sales_amount) AS total_sales
+FROM 
+    delivery_orders d
+    INNER JOIN order_value o ON d.delivery_id = o.delivery_id
+    WHERE 
+        DATE_TRUNC('year', order_placed_time) = '2021-01-01'
+    GROUP BY 1, 2)
+
+SELECT 
+    month, 
+    ROUND(AVG(CASE WHEN total_sales > 100 THEN 1.00 
+        ELSE 0.00 END) * 100, 2) AS average_sales
+FROM my_sales
+GROUP BY 1
+ORDER BY 1;
