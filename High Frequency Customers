@@ -1,0 +1,40 @@
+LEVEL:- Medium
+COMPANY:- Doordash
+
+QUESTION:- Write a SQL query to calculate the % of high-frequency customers for January 2023. A high-frequency customer is defined as someone who places more 
+than 5 orders in a month. Your output should only include the % of these high-frequency customers.
+Round your results to 2 decimal points.
+
+Table is delivery_order
+
+Solution-1:- In Postgre
+WITH janMonthOrder AS (
+    SELECT customer_id, COUNT(*) AS totalOrdersByCustomer
+    FROM delivery_order 
+    WHERE EXTRACT (MONTH FROM order_timestamp) = 1
+    GROUP BY customer_id
+),
+janTotalOrders AS(
+    SELECT COUNT(*) AS totalOrders FROM janMonthOrder
+),
+moreThanFiveOrders AS(
+    SELECT COUNT(*) AS custOrders FROM janMonthOrder WHERE totalOrdersByCustomer > 5
+)
+SELECT ROUND((CAST(custOrders AS NUMERIC) / totalOrders)::NUMERIC, 2) AS ratio 
+FROM janTotalOrders, moreThanFiveOrders;
+
+Solution-2:- In Postgre
+WITH my_high_frequency AS (
+
+    SELECT 
+        customer_id
+    FROM delivery_order
+    WHERE DATE_TRUNC('month', order_timestamp) = '2023-01-01' 
+    GROUP BY 1
+    HAVING COUNT(*) > 5)
+    
+SELECT
+    1.00*COUNT(DISTINCT mhf.customer_id)/COUNT(DISTINCT d.customer_id)
+FROM delivery_order d
+LEFT JOIN my_high_frequency mhf ON mhf.customer_id = d.customer_id
+WHERE DATE_TRUNC('month', order_timestamp) = '2023-01-01' 
