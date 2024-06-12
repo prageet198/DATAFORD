@@ -1,0 +1,14 @@
+LEVEL:- Medium
+COMPANY:- IBM
+
+QUESTION:- IBM is developing a new feature to analyze user purchasing behavior for all Fridays in the first quarter of the year. 
+For each Friday separately, calculate the average amount users have spent per order. The output should include the week number of that Friday and the average amount spent, 
+rounded to two decimal places.
+
+Table is:- user_purchases 
+
+Solution:- In Postgre
+SELECT ROUND(AVG(amount_spent),2) AS avgSpent, EXTRACT('week' FROM date) AS salesWeek
+FROM user_purchases 
+WHERE day_name='Friday' AND EXTRACT('QUARTER' FROM date)='1'
+GROUP BY EXTRACT('week' FROM date)
