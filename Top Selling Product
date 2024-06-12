@@ -1,0 +1,40 @@
+TITLE:- Top Selling Product
+LEVEL:- Medium
+COMPANY:- Shopify
+
+QUESTION:- As an analyst at Shopify, your task is to uncover the product that has received the highest number of orders from users in Germany. 
+In case of a tie, you should display all products sharing the top spot.
+
+Table are:- orders, users, products,product_orders
+
+Solution-1:- In Postgre
+With germanyTotalOrders AS(
+SELECT products.market_name, COUNT(*) AS totalOrders
+FROM orders INNER JOIN users ON orders.user_id=users.id
+INNER JOIN product_orders ON product_orders .order_id=orders .order_id
+INNER JOIN products ON products .prod_sku_id=product_orders.product_id
+WHERE users.country='Germany'
+GROUP BY products.market_name
+),
+ranking AS(
+SELECT market_name, RANK() OVER (ORDER BY totalOrders DESC) AS ranked
+FROM germanyTotalOrders
+)
+SELECT market_name FROM ranking WHERE ranked='1'
+
+Solution-2:- In Postgre
+WITH germany_products_ranking AS
+  (SELECT p.market_name,
+          COUNT(*) AS n_orders,
+          RANK() OVER(
+                      ORDER BY COUNT(*) DESC) AS rnk
+   FROM product_orders m
+   JOIN orders o ON m.order_id = o.order_id
+   JOIN users u ON o.user_id = u.id
+   JOIN products p ON m.product_id = p.prod_sku_id
+   WHERE u.country ILIKE 'Germany'
+   GROUP BY 1)
+   
+SELECT market_name
+FROM germany_products_ranking
+WHERE rnk= 1
