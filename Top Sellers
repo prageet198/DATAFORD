@@ -1,0 +1,17 @@
+LEVEL:- Medium
+COMPANY:- Amazon
+
+QUESTION:- You have a transactional dataset from Amazon, detailing sales across various products and marketplaces. Your objective is to identify and list 
+the top 3 sellers in each product category for the month of January.
+
+Table is:- sales_data 
+
+Solution:- In Postgresql
+WITH details AS (
+SELECT *,
+RANK() OVER (PARTITION BY product_category ORDER BY total_sales DESC) AS rn
+FROM sales_data
+WHERE EXTRACT(MONTH FROM TO_DATE(month, 'YYYY-MM'))='1'
+)
+SELECT seller_id, total_sales, product_category, market_place, month
+FROM details WHERE rn in (1,2,3)
