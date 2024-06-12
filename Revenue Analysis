@@ -1,0 +1,21 @@
+LEVEL:- Medium
+COMPANY:- PwC
+
+QUESTION:- Identify companies whose revenue consistently increases every year without any dips. This means that if a company's revenue increases for several 
+consecutive years but then experiences a dip in revenue, that company should not be included in the output.
+
+Table is:- company_revenue 
+
+Solution:- In Postgre
+With totalRevenue AS (
+  SELECT *,
+         LAG(revenue, 1, 0) OVER (PARTITION BY company ORDER BY year) AS prev_rev,
+         revenue - LAG(revenue, 1, 0) OVER (PARTITION BY company ORDER BY year) AS revenue_diff,
+         COUNT(*) OVER(PARTITION by company) AS total_rows
+  FROM company_revenue
+)
+SELECT company
+FROM totalRevenue
+WHERE revenue_diff > 0
+GROUP BY 1, total_rows
+HAVING total_rows = COUNT(*);
