@@ -1,0 +1,15 @@
+LEVEL:- Medium
+COMPANY:- Tinder
+
+QUESTION:- Write a query to find the names of employees who were still employed as of January 2, 2016.
+
+Tables are:- employees , terminations 
+
+Solution:- In Postgre
+SELECT
+e.name
+FROM employees e
+LEFT JOIN terminations t ON t.emp_id = e.id
+WHERE
+(hire_date<= '2016-01-02' AND t.term_date> '2016-01-02')
+OR (t.emp_id IS NULL)
