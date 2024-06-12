@@ -1,0 +1,19 @@
+LEVEL:- Medium
+COMPANY:- Google
+
+QUESTION:- Find the 80th percentile of hours studied. Output hours studied value.
+
+Table is:- sat_scores 
+
+Solution-1:- In Postgre
+SELECT percentile_disc(0.8) WITHIN GROUP (ORDER BY hrs_studied) AS perc80 FROM sat_scores 
+
+Solution-2:- In Postgre
+SELECT DISTINCT hrs_studied
+FROM
+  (SELECT *,
+          PERCENT_RANK() OVER (
+                               ORDER BY hrs_studied) AS study_percentile
+   FROM sat_scores
+   WHERE hrs_studied IS NOT NULL) sub
+WHERE ROUND(study_percentile*100) = 80
