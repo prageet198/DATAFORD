@@ -1,0 +1,40 @@
+LEVEL:-Medium
+COMPANY:-Shopify
+
+QUESTION:- Can you write a SQL query to determine the top employee based on customer votes? We're interested in employees who've received votes when customers leave 
+their 10-digit phone numbers in the "customer_response" field. Remember, we're looking for valid 10-digit phone numbers.
+
+If 2, or more employees have the same number of votes, display all of them.
+
+Table is:- customer_responses 
+
+Solution-1:- In Postgre
+WITH filteredData AS (
+SELECT employee_id, COUNT(*) AS totalEmp
+FROM customer_responses 
+WHERE customer_response ~ '^[0-9]{10}$'
+GROUP BY employee_id
+),
+ranking AS (
+SELECT *, RANK() OVER (ORDER BY totalEmp DESC) AS ranked
+FROM filteredData
+)
+
+SELECT employee_id, totalEmp FROM ranking WHERE ranked='1'
+
+Solution-2:- In Postgre
+WITH my_responses AS (
+
+SELECT 
+  employee_id,
+  COUNT(*) AS responses,
+  RANK() OVER(ORDER BY COUNT(*) DESC) AS rnk
+FROM customer_responses
+WHERE customer_response ~ '^[0-9]+$' AND LENGTH(customer_response)=10
+GROUP BY 1)
+
+SELECT
+  employee_id,
+  responses
+FROM my_responses
+WHERE rnk = 1
