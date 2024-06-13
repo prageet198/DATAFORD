@@ -1,0 +1,35 @@
+LEVEL:-Medium
+COMPANY:-JPMorgan
+
+QUESTION:- Your team at JPMorgan Chase is preparing to launch a new credit card and needs to estimate how many cards will be issued in its first month.
+
+Your task is to write a SQL query to find out how many cards were issued in the first month of previous card launches. 
+The query should display each credit card's name alongside the quantity issued in its launch month.
+
+Hint: To identify the launch month, refer to the earliest record for each card
+
+Table is:- monthly_cards_issued 
+
+Solution-1:- In Postgre
+WITH allData AS (
+SELECT card_name, issued_amount,
+ROW_NUMBER() OVER (PARTITION BY card_name ORDER BY issue_year, issue_month) AS rmm
+FROM monthly_cards_issued
+)
+SELECT card_name, issued_amount FROM allData WHERE rmm='1'
+
+Solution-2:- In Postgre
+WITH card_launch AS (
+    SELECT
+        card_name,
+        issued_amount,
+        ROW_NUMBER() OVER(PARTITION BY card_name ORDER BY issue_year) AS rnk_year,
+        ROW_NUMBER() OVER(PARTITION BY card_name, issue_year ORDER BY issue_month) AS rnk_month
+    FROM
+        monthly_cards_issued)
+
+SELECT
+    card_name,
+    issued_amount
+FROM card_launch
+WHERE rnk_year = 1 AND rnk_month = 1
