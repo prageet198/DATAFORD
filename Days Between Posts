@@ -1,0 +1,21 @@
+LEVEL:-Medium
+COMPANY:-Dataford
+
+QUESTION:-Write a query to find the number of days between each user's first post of the year and last post of the year. Only include users who posted at least twice in 2021.
+
+Your output should include the user_id and the number of days between each user's first and last post.
+
+Table is:- posts 
+
+Solution:- In Postgre
+WITH allData AS(
+SELECT DISTINCT(user_id),
+COUNT(*) OVER(PARTITION BY user_id) As totalPosts,
+Min(post_date) OVER(PARTITION BY user_id) AS postStartDate,
+MAX(post_date) OVER(PARTITION BY user_id) AS postEndDate
+FROM posts
+WHERE EXTRACT(YEAR FROM post_date)='2021'
+)
+SELECT user_id,
+EXTRACT(DAY FROM (postEndDate::timestamp - postStartDate::timestamp)) AS days_diff
+FROM allData WHERE totalPosts>=2
