@@ -1,0 +1,25 @@
+LEVEL:-Medium
+COMPANY:-Doordash
+
+QUESTION:- As the holiday season nears, your team is gearing up for heightened sales during Christmas. To effectively prepare, you've been assigned the 
+task of identifying the 2 top-performing restaurants based on sales by their IDs.
+
+Make sure to exclude any orders with blank values in the actual_delivery_time field, as they mean that they were not received and 
+for this reason should not be considered as part of the monthly sales calculation.
+
+Tables are:- order_value , delivery_orders 
+
+Solution:- In Postgre
+WITH totalSales AS(
+SELECT delivery_orders.restaurant_name, SUM(order_value .sales_amount) AS totalSales
+FROM delivery_orders 
+INNER JOIN order_value 
+ON delivery_orders.delivery_id=order_value .delivery_id
+WHERE actual_delivery_time IS NOT NULL
+GROUP BY delivery_orders.restaurant_name
+),
+ranking AS (
+SELECT restaurant_name, totalSales, RANK() OVER(ORDER BY totalSales DESC) AS ranked
+FROM totalSales
+)
+SELECT restaurant_name, totalSales FROM ranking WHERE ranked IN (1,2)
