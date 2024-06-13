@@ -1,0 +1,29 @@
+LEVEL:-Medium
+COMPANY:-Dataford
+
+QUESTION:-Calculate the average time each user spent in a session.
+
+A session means the time between a 'page_load' and 'page_exit' event. If a user has multiple identical events in a day, 
+pick the latest 'page_load' and earliest 'page_exit', making sure the 'page_load' happens before 'page_exit'.
+
+Table is:- user_actions 
+
+Solution:- In Postgre
+WITH allData AS(
+SELECT user_id, 
+    EXTRACT(DAY FROM timestamp) AS date,
+    MAX(CASE WHEN action = 'page_load' THEN timestamp END) AS eventStart,
+    MIN(CASE WHEN action = 'page_exit' THEN timestamp END) AS eventEnd
+FROM user_actions
+GROUP BY user_id, EXTRACT(DAY FROM timestamp)
+),
+timeDifference AS(
+SELECT user_id,
+ROUND(EXTRACT(EPOCH FROM eventEnd - eventStart),1) AS time_difference_seconds
+FROM allData 
+)
+SELECT user_id, AVG(time_difference_seconds) AS avgSessionTime 
+FROM timeDifference 
+WHERE time_difference_seconds IS NOT NULL
+GROUP BY user_id
+ORDER BY user_id
