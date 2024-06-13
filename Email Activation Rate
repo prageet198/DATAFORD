@@ -1,0 +1,25 @@
+LEVEL:-Medium
+COMPANY:-Tiktok
+
+QUESTION:- As a new analyst at Tiktok, you are provided with 2 tables. The first table, named emails, contains records of user email signups. 
+The second table, texts, contains information about the text confirmation received by each user.
+
+Your goal is to calculate the email confirmation rate. This rate is defined as the % of emails who have been confirmed. Round your result to 2 decimal points.
+
+Tables are:- emails, texts 
+
+Solution-1:- In Postgre
+WITH commonUsers AS (
+SELECT DISTINCT(emails.email_id), texts.signup_action
+FROM emails LEFT JOIN texts ON emails.email_id=texts.email_id
+)
+SELECT ROUND(CAST(COUNT(CASE WHEN signup_action='Confirmed' THEN 1 END) AS DECIMAL) / COUNT(*), 2) AS ratio
+FROM commonUsers;
+
+Solution-2:- In Postgre
+SELECT 
+    ROUND(1.00*COUNT(DISTINCT texts.email_id)/COUNT(DISTINCT emails.email_id),2) 
+           AS activation_rate
+FROM emails
+LEFT JOIN texts ON emails.email_id = texts.email_id 
+                   AND texts.signup_action = 'Confirmed';
