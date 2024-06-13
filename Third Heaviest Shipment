@@ -1,0 +1,17 @@
+LEVEL:-Medium
+COMPANY:-Amazon
+
+QUESTION:- As part of your task for Amazon, find the shipment with the 3rd heaviest weight. Your query should return the shipment_id and the weight of this shipment.
+
+In cases of tied weights, ranks should be assigned without gaps. For instance, if there are 5 shipments with weights of 100, 100, 50, 40, and 30 pounds, 
+the first 2 shipments at 100 pounds each would both be ranked 1st, the 50-pound shipment would be ranked 2nd, and the 40-pound shipment would be ranked 3rd.
+
+Table is :- shipments 
+
+Solution:- In Postgre
+WITH ranking AS(
+SELECT shipment_id, weight,
+DENSE_RANK() OVER (ORDER BY weight DESC) AS ranked
+FROM shipments 
+)
+SELECT shipment_id, weight FROM ranking WHERE ranked=3
