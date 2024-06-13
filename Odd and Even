@@ -1,0 +1,48 @@
+LEVEL:-Medium
+COMPANY:-Google
+
+QUESTION:-Assume you're given a table called measurements with measurement values from a Google sensor over multiple days.
+
+Write a SQL query to calculate the sum of odd-numbered and even-numbered measurements separately for a particular day. 
+The resulting table should have 3 columns: measurement_day, odd_sum, and even_sum.
+
+Assumptions:
+    Within a day, measurements taken at 1st, 3rd, and 5th times are considered odd-numbered measurements, and measurements taken at 2nd, 4th, and 6th times are 
+	considered even-numbered measurements.
+    There are no NULL values in the measurement_value or measurement_time columns.
+
+Table is :- measurements 
+
+Solution-1:- In Postgre
+WITH overAllData AS(
+SELECT DATE_TRUNC('day', measurement_time::timestamp) AS truncated_time,
+measurement_time,
+ROW_NUMBER() OVER(PARTITION BY EXTRACT(DAY FROM measurement_time) ORDER BY measurement_time) AS rowNum
+FROM measurements
+),
+status AS (
+SELECT truncated_time,
+CASE WHEN rowNum % 2 = 0 THEN 'EVEN' ELSE 'ODD' END AS statuses
+FROM overAllData
+)
+SELECT truncated_time,
+COUNT (CASE WHEN statuses='ODD' THEN 1 END) AS oddTotal,
+COUNT (CASE WHEN statuses='EVEN' THEN 1 END) AS evenTotal
+FROM status
+GROUP BY truncated_time
+ORDER BY truncated_time
+
+Solution-2:- In Postgre
+WITH my_measurements AS (
+SELECT 
+    DATE(measurement_time) AS day, 
+    ROW_NUMBER() OVER (PARTITION BY DATE(measurement_time) 
+      ORDER BY measurement_time) AS measurement_num 
+ FROM measurements)
+ 
+ SELECT
+    day,
+    SUM(CASE WHEN measurement_num %2=1 THEN 1 END) AS odd_numbers,
+    SUM(CASE WHEN measurement_num %2=0 THEN 1 END) AS even_numbers
+ FROM my_measurements
+ GROUP BY 1
