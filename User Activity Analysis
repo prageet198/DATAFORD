@@ -1,0 +1,27 @@
+LEVEL:-Medium
+COMPANY:-Snapchat
+
+QUESTION:-Write a SQL query to obtain a breakdown by age group of the time spent sending vs. opening snaps as a % of total time spent. 
+The total time spent should only include these 2 activities (sending and opening).
+
+For instance, If a user group spends 5 minutes opening snaps and 10 minutes sending snaps, the query should calculate the % of time 
+opening snaps as 5 divided by 15 (10+5) and the % of time sending snaps as 10 divided by 15.
+
+Round the percentage to 2 decimal places in the output.
+
+Tables are:- activities, age_breakdown 
+
+Solution:- In Postgre
+WITH combineData AS(
+SELECT
+age_breakdown.age_bucket,
+SUM (CASE WHEN activity_type='open' THEN time_spent END) AS totalOpenTime,
+SUM (CASE WHEN activity_type='send' THEN time_spent END) AS totalSendTime
+FROM activities INNER JOIN age_breakdown 
+ON activities.user_id=age_breakdown.user_id
+GROUP BY age_bucket
+)
+SELECT age_bucket ,
+ROUND((totalOpenTime/(totalOpenTime+totalSendTime)),2) AS openPerc,
+ROUND((totalSendTime/(totalOpenTime+totalSendTime)),2) AS sendPerc
+FROM combineData ORDER BY age_bucket
