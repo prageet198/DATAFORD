@@ -1,0 +1,27 @@
+LEVEL:- Medium
+COMPANY:- Lyft
+
+QUESTION:- In this task, your goal is to determine the city that had the most profitable month in the year 2023. The output will display the city, 
+the corresponding most profitable month, and the profit achieved during that period.
+
+In case of ties in profit, display all results that share the top spot.
+
+Tables are:- orders, payment_details 
+
+Solution:- In Postgre
+WITH monthlyData AS(
+SELECT order_id, order_fare, EXTRACT(MONTH FROM order_date) AS months
+FROM payment_details
+WHERE EXTRACT(YEAR FROM order_date) = '2023'
+),
+combineAll AS(
+SELECT SUM(order_fare) AS totalProfit, months, orders.city
+FROM monthlyData INNER JOIN orders ON monthlyData.order_id=orders.order_id
+GROUP BY months, orders.city
+),
+ranking AS(
+SELECT * ,
+RANK () OVER(ORDER BY totalProfit DESC) AS ranked
+FROM combineAll
+)
+SELECT city, months, totalprofit FROM ranking WHERE ranked='1'
