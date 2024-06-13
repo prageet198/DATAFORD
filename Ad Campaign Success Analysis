@@ -1,0 +1,25 @@
+LEVEL:-Medium
+COMPANY:-Accenture
+
+QUESTION:-The marketing team has recently conducted an ad promo and wants to evaluate its effectiveness. They need to understand the total units sold for each product 
+following the promotion using these benchmarks:
+    Outstanding: 30 or more
+    Satisfactory: 20 - 29
+    Unsatisfactory: 10 - 19
+    Poor: 1 - 9
+Your results should include the product ID and its corresponding ad performance category.
+
+Table is:- marketing_campaign
+
+Solution:- In Postgre
+WITH totalUnits AS (
+SELECT product_id, SUM(quantity) AS totalUnitSold 
+FROM marketing_campaign
+GROUP BY product_id
+)
+SELECT product_id,
+CASE WHEN totalUnitSold BETWEEN '1' AND '9' THEN 'Poor'
+     WHEN totalUnitSold BETWEEN '10' AND '19' THEN 'Unsatisfactory'
+     WHEN totalUnitSold BETWEEN '20' AND '29' THEN 'Satisfactory'
+     ELSE 'Outstanding' END AS adPerformance
+FROM totalUnits
