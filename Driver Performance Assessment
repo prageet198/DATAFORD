@@ -1,0 +1,19 @@
+LEVEL:-Medium
+COMPANY:-Doordash
+
+QUESTION:- Evaluate the performance of delivery drivers with precision. Your task: Find the average order value for drivers who've successfully completed deliveries within 45 minutes.
+
+Output the driver ID along with their respective average order values.
+
+Table is:- delivery_details
+
+Solution:- In Postgre
+WITH timing AS (
+SELECT driver_id, order_total,
+ROUND(EXTRACT(EPOCH FROM (delivered_to_consumer_datetime::timestamp - customer_placed_order_datetime::timestamp)) / 60) AS time_difference_in_minutes
+FROM delivery_details 
+)
+SELECT driver_id, AVG(order_total) AS avgOrderTotal
+FROM timing
+WHERE time_difference_in_minutes<='45'
+GROUP BY driver_id
