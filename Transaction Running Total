@@ -1,0 +1,20 @@
+LEVEL:-Medium
+COMPANY:-Dataford
+
+QUESTION:-Given a table of transactions with transaction dates and amounts, write a SQL query to calculate the running total for each day.
+
+For instance, if transactions on the first day total $20 and on the second day total $30, the output for the first day should be $20 
+and for the second day $50 (which is $20 from the first day plus $30 from the second).
+
+Table is:- transactions 
+
+Solution:-
+WITH overallTotal AS (
+SELECT transaction_date,
+SUM(amount) AS totalAmt
+FROM transactions
+GROUP BY transaction_date
+)
+SELECT transaction_date ,
+SUM(totalAmt) OVER (ORDER BY transaction_date) AS running_total
+FROM overallTotal
