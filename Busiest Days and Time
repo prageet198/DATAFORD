@@ -1,0 +1,40 @@
+LEVEL:-Medium
+COMPANY:-Tesla
+
+QUESTION:-Write a query to identify the top 2 busiest times of the week for the company based on the criteria provided:
+
+    Morning: Before 12 a.m. (not inclusive)
+    Early afternoon: 12 p.m. - 3 p.m. (inclusive)
+    Late afternoon: after 3 p.m.
+
+Your output should include the day and time of day combination for the 2 busiest times, along with the number of orders. 
+The day should be displayed in text format (e.g. Monday instead of 1). In the event of a tie in ranking, all results should be displayed.
+
+Table is:- sales_log 
+
+To convert any date to a Day format use: TO_CHAR(DATE_TRUNC('day', timestamp), 'Day') AS day
+WITH combineData AS(
+SELECT order_id,
+TO_CHAR(DATE_TRUNC('day', timestamp), 'Day') AS orderdDay,
+EXTRACT(HOUR FROM timestamp) AS orderdTime,
+timestamp
+FROM sales_log 
+),
+calculation AS(
+SELECT order_id,
+orderdDay,
+orderdTime,
+CASE WHEN orderdTime<'12' THEN 'Morning'
+     WHEN orderdTime<'15' THEN 'Early afternoon' 
+     ELSE 'Late afternoon' END  AS timeOfDay
+FROM combineData
+),
+totalOrder AS (
+SELECT orderdday, timeofday, COUNT(*) AS totalOrders
+FROM calculation
+GROUP BY  orderdday, timeofday
+),
+ranking AS(
+SELECT *, DENSE_RANK() OVER(ORDER BY totalOrders DESC) AS ranked FROM totalOrder
+)
+SELECT orderdday, timeofday, totalOrders FROM ranking WHERE ranked IN (1,2)
