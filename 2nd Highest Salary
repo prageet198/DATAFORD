@@ -1,0 +1,18 @@
+LEVEL:-Medium
+COMPANY:-Dataford
+
+QUESTION:-Write a SQL query to find the second highest salary in the engineering department, considering that there may be multiple employees with the same highest salary.
+
+Note: If more than one person shares the highest salary, the query should select the next highest salary.
+
+Table are:- employees, departments  
+
+Solution:- In Postgre
+WITH salaries AS (
+SELECT employees.id, employees.salary, departments.name,
+DENSE_RANK() OVER (PARTITION BY departments.name ORDER BY employees.salary DESC) AS ranked
+FROM employees INNER JOIN departments
+ON employees.department_id=departments.id
+WHERE departments.name='engineering'
+)
+SELECT DISTINCT(salary) AS sal FROM salaries WHERE ranked=2
