@@ -1,0 +1,17 @@
+LEVEL:-Medium
+COMPANY:-Opensea
+
+QUESTION:- Opensea wants to analyze their sales data to identify the most expensive Non-Fungible Tokens (NFTs) sold in the past 30 days. Assume that today is April 15th, 2023.
+
+Create a SQL query to find the top 3 most expensive NFTs sold during this period, along with their respective sale price. Assume that each NFT has a unique sale price.
+
+Table is:- nft_sales 
+
+Solution:- In Postgre
+WITH combineData AS(
+SELECT name,
+price,
+ROW_NUMBER() OVER(ORDER BY PRICE DESC) AS ranked
+FROM nft_sales WHERE date_trunc('day', date_of_sale) >= '2023-04-15'::date - INTERVAL '30 days'
+)
+SELECT name, price FROM combineData WHERE ranked<=3
