@@ -1,0 +1,17 @@
+LEVEL:-Medium
+COMPANY:-Uber
+
+QUESTION:- Write a SQL query to obtain the 3rd oldest transaction for each user using the Uber transactions table. 
+The output should include the user's ID, the amount spent in this 3rd transaction, and the date of the transaction.
+
+Table is:- transactions 
+
+Solution:- In Postgre
+WITH combineAll AS(
+SELECT user_id,
+spend,
+transaction_date,
+ROW_NUMBER() OVER(PARTITION BY user_id ORDER BY transaction_date) AS ranked
+FROM transactions
+)
+SELECT user_id, spend, transaction_date FROM combineAll WHERE ranked='3'
