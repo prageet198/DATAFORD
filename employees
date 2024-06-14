@@ -1,0 +1,26 @@
+LEVEL:-Medium
+COMPANY:-Dataford
+
+QUESTION:-Given a table of employees with their respective managers, write a SQL query to generate a report that displays 
+the name of each employee along with the name of their manager (if any) and the number of direct reports each manager has.
+
+To clarify, the manager_name column may have NULL values for top-level managers (those with no manager_id). 
+These employees have no manager, so their manager_name should be blank or NULL in the output.
+
+Table is:- employees 
+
+Solution:- In Postgre
+WITH empMgr AS(
+SELECT emp.id AS employeeId, emp.name AS employeeName,
+emp.manager_id AS managerId, mgr.name AS managerName
+FROM employees AS emp LEFT JOIN employees AS mgr
+ON emp.manager_id=mgr.id
+),
+managerDirectReports AS(
+SELECT manager_id, COUNT(*) AS totalEmp
+FROM employees
+WHERE manager_id IS NOT NULL
+GROUP BY manager_id
+)
+SELECT empMgr.employeeName, empMgr.managerName, managerDirectReports.totalEmp
+FROM empMgr LEFT JOIN managerDirectReports ON empMgr.managerId=managerDirectReports.manager_id
