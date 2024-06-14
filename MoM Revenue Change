@@ -1,0 +1,20 @@
+LEVEL:-Medium
+COMPANY:-Amazon
+
+QUESTION:-Write a SQL query to calculate the month-over-month percentage change in revenue.
+
+The output should include the year-month date (in YYYY-MM format) and percentage change, rounded to 2 decimal points.
+
+Table is:- purchases 
+
+Solution:- In Postgre
+WITH yearMonth AS (
+SELECT EXTRACT(YEAR FROM purchase_date) AS purchasedYear,
+LPAD(EXTRACT(MONTH FROM purchase_date)::text, 2, '0') AS purchasedMonth,
+revenue,
+LAG(revenue,1) OVER (ORDER BY purchase_date) AS previousRevenue
+FROM purchases 
+)
+SELECT CONCAT(purchasedyear,'-',purchasedmonth),
+ROUND(((revenue-previousRevenue)/previousRevenue)*100,2) AS pctChange
+FROM yearMonth
