@@ -1,0 +1,63 @@
+LEVEL:-Hard
+COMPANY:-Stripe
+
+QUESTION:-Sometimes, payment transactions are repeated by accident; it could be due to user error, API failure or a retry error that causes a 
+credit card to be charged twice.
+
+Using the transactions table, identify any payments made at the same merchant with the same credit card for the same 
+amount within 10 minutes of each other. Count such repeated payments.
+
+Assumptions:
+
+    The first transaction of such payments should not be counted as a repeated payment. This means, if there are 2 transactions performed 
+	by a merchant with the same credit card and for the same amount within 10 minutes, there will only be 1 repeated payment.
+
+Table is:- transactions 
+
+Solution-1:- In Postgre
+WITH data AS (
+    SELECT 
+        transaction_id,
+        merchant_id,
+        credit_card_id,
+        amount,
+        transaction_timestamp,
+        LAG(transaction_id) OVER (PARTITION BY merchant_id, credit_card_id, amount 
+                                  ORDER BY transaction_timestamp) AS prev_transaction_id,
+        LAG(transaction_timestamp) OVER (PARTITION BY merchant_id, credit_card_id, amount 
+                                         ORDER BY transaction_timestamp) AS prev_transaction_timestamp
+    FROM transactions
+),
+timeCalculation AS (
+    SELECT 
+        transaction_id,
+        merchant_id,
+        credit_card_id,
+        amount,
+        transaction_timestamp,
+        CASE 
+            WHEN prev_transaction_id IS NOT NULL
+                 AND ABS(EXTRACT(EPOCH FROM (transaction_timestamp - prev_transaction_timestamp)) / 60) <= 10 
+                 THEN 0  -- Repeated payment within 10 minutes
+            ELSE 1  -- Not a repeated payment
+        END AS status
+    FROM data
+)
+SELECT 
+    COUNT(*) AS repeated_payments_count
+FROM timeCalculation
+WHERE status = 0;
+
+Solution-2:- In Postgre
+SELECT COUNT(*) AS repeated_payments_count
+FROM transactions t1
+WHERE EXISTS (
+    SELECT 1
+    FROM transactions t2
+    WHERE t1.merchant_id = t2.merchant_id
+      AND t1.credit_card_id = t2.credit_card_id
+      AND t1.amount = t2.amount
+      AND t1.transaction_id <> t2.transaction_id  -- Ensure different transactions
+      AND ABS(EXTRACT(EPOCH FROM (t1.transaction_timestamp - t2.transaction_timestamp)) / 60) <= 10
+      AND t2.transaction_timestamp > t1.transaction_timestamp  -- t2 should be later than t1
+);
