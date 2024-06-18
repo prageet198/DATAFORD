@@ -1,0 +1,35 @@
+LEVEL:-Hard
+COMPANY:-Uplers
+
+QUESTION:-A company is planning to hire candidates for both junior and senior roles with a budget cap of $50,000. The hiring process prioritizes 
+filling senior positions first, followed by junior positions.
+
+For instance, suppose the budget is $55,000, with each senior role offering $20,000 and junior roles $10,000. 
+In this scenario, the company can hire 2 senior candidates (as hiring 3 would exceed the budget) and 1 junior candidate to use 
+the remaining budget after allocating funds for senior roles.
+
+Write a SQL query to calculate how many senior and junior positions the company can fill within the given budget using the candidates table.
+
+Table is:- candidates 
+
+Solution:- In Postgre
+--GET RUNNING SALARIES BASED ON POSTIONS
+WITH salaries AS (
+SELECT * ,
+SUM(salary) OVER(PARTITION BY positions ORDER BY salary) AS runningSalries
+FROM candidates
+),
+seniorCounts AS (
+SELECT COUNT(*) AS noOfSeniors,
+COALESCE(SUM(salary), 0) AS total_salary
+FROM salaries
+WHERE positions='senior' AND runningSalries<=50000
+),
+juniorCounts AS (
+SELECT COUNT(*) AS noOfJuniors,
+COALESCE(SUM(salary), 0) AS total_salary
+FROM salaries
+WHERE positions='junior' AND runningSalries<=50000 - (SELECT total_salary FROM seniorCounts)
+)
+SELECT noOfSeniors, noOfJuniors
+FROM seniorCounts,juniorCounts
