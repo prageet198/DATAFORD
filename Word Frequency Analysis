@@ -1,0 +1,36 @@
+LEVEL:-Hard
+COMPANY:-Google
+
+QUESTION:- Identify the occurrences of 'bull' and 'bear' within the content, excluding variations like 'bullish' or 'bearish'. 
+Display the word 'bull' and 'bear' alongside their respective occurrence counts.
+
+The query should be case-insensitive, treating 'Bull', 'bull', 'Bear', and 'bear' as equivalent.
+
+Table is:- document_content 
+
+Solution-1:- In Postgre
+SELECT
+    LOWER(word) AS word,
+    COUNT(*) AS occurrence_count
+FROM (
+    SELECT
+        UNNEST(STRING_TO_ARRAY(contents, ' ')) AS word
+    FROM
+        document_content 
+) AS words
+WHERE
+    LOWER(word) IN ('bull', 'bear')
+GROUP BY
+    LOWER(word);
+	
+
+Solution-2:- In Postgre
+WITH my_words AS (
+    SELECT REGEXP_SPLIT_TO_TABLE(contents, ' ') AS words
+    FROM document_content)
+SELECT
+    LOWER(words) AS word,
+    COUNT(*) AS occurrences
+FROM my_words
+WHERE LOWER(words) IN ('bull', 'bear')
+GROUP BY 1;
