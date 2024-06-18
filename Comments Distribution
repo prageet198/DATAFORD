@@ -1,0 +1,32 @@
+LEVEL:-Hard
+COMPANY:-Dataford
+
+QUESTION:-Write a SQL query to calculate a cumulative distribution showing the total number of users falling into each 'comment frequency' bucket. 
+For instance, the first bucket will include users with 0 comments, the second for users with 1 comment, and so on.
+
+Tables are:- users, comments 
+
+Solution:- In Postgre
+WITH userComments AS (
+SELECT users.id, COUNT(body) AS totalComments
+FROM users LEFT JOIN comments 
+ON users.id=user_id
+GROUP BY users.id
+),
+commentBucket AS (
+SELECT DISTINCT(totalComments) AS r1 FROM userComments
+),
+commentsCount AS(
+SELECT totalComments AS r2, COUNT(*) AS cumTotal
+FROM userComments
+GROUP BY totalComments
+),
+overAllCalculation AS (
+SELECT r1, cumTotal
+FROM commentBucket INNER JOIN commentsCount
+ON r1=r2
+ORDER BY r1
+)
+SELECT r1,
+SUM(cumTotal) OVER(ORDER BY r1) AS cumulativeTotal
+FROM overAllCalculation
