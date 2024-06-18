@@ -1,0 +1,30 @@
+LEVEL:-Hard
+COMPANY:-uber
+QUESTION:-Creating a naïve forecast entails setting all forecasts to the last observation's value. In our scenario, 
+we apply this to the "distance per dollar" metric (calculated as distance_to_travel/monetary_cost). Summing distance 
+and cost on a monthly basis yields actual values, and forecasted values come from the previous month. To assess accuracy, 
+we use the root mean squared error (RMSE), computed as sqrt(mean(square(actual - forecast))). Report the rounded RMSE to the 2nd decimal place for a concise analysis.
+
+Table is:- uber_request_logs 
+
+Solution:- In Postgre
+WITH monthly AS (
+SELECT EXTRACT(MONTH FROM request_date) AS monthId, distance_to_travel, monetary_cost 
+FROM uber_request_logs 
+),
+dpdCalculation AS(
+SELECT monthId, SUM (distance_to_travel)/SUM(monetary_cost) AS dpd
+FROM monthly
+GROUP BY monthId
+),
+forecast AS (
+SELECT monthId, dpd, LAG(dpd,1,0) OVER(ORDER BY monthId) AS previousDpd
+FROM dpdCalculation
+),
+morePower AS(
+SELECT monthId, dpd, previousDpd,
+POWER(previousDpd-dpd,2) AS powered
+FROM forecast
+)
+SELECT ROUND(SQRT(AVG(powered))::DECIMAL ,2) as rmse
+FROM morePower
