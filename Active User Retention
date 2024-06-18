@@ -1,0 +1,39 @@
+LEVEL:-Hard
+COMPANY:-Dataford
+
+QUESTION:-Assume you have the user_actions table that contains information on Facebook user actions.
+
+Write a query to obtain the number of active users as of July 2022.
+
+An active user is a user who has one of these actions ("sign-in", "like", or "comment") in the current month and last month.
+
+Table is:- user_actions
+
+Solution-1:- In Postgre
+WITH data AS (
+SELECT user_id,
+event_type,
+EXTRACT(MONTH FROM event_date) AS extractedMonth,
+EXTRACT(YEAR FROM event_date) AS extractedYear
+FROM user_actions
+),
+filterd AS (
+SELECT user_id,event_type,extractedMonth
+FROM data
+WHERE extractedMonth IN (6,7) AND extractedYear='2022'
+),
+calclation AS (
+SELECT user_id
+FROM filterd 
+GROUP BY user_id
+HAVING COUNT(DISTINCT extractedMonth)=2
+)
+SELECT COUNT(*) AS activeUser FROM calclation
+
+Solution-2:- In Postgre
+SELECT 
+      COUNT(DISTINCT cm.user_id) AS active_users
+FROM user_actions cm
+INNER JOIN user_actions lm ON cm.user_id=lm.user_id
+AND DATE_TRUNC('month', cm.event_date)=DATE_TRUNC('month', lm.event_date)  + interval '1 month'
+WHERE DATE_TRUNC('month', cm.event_date)='2022-07-01'
