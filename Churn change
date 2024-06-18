@@ -1,0 +1,27 @@
+LEVEL:-Hard
+COMPANY:-Lyft
+
+Table is:- lyft_drivers
+
+Solution:- In Postgre
+WITH datas AS (
+SELECT EXTRACT(YEAR FROM end_date) AS churnedYear 
+FROM lyft_drivers WHERE end_date is not null
+),
+calculation AS (
+SELECT churnedYear, 
+COUNT(*)  AS totalChurned
+FROM datas
+GROUP BY churnedYear
+),
+previousYear AS(
+SELECT churnedyear, totalchurned,
+Lag(totalChurned, 1, 0) OVER(
+       ORDER BY churnedyear ASC) AS previousChurned
+FROM calculation
+)
+SELECT churnedyear, totalchurned, previousChurned,
+CASE WHEN totalchurned=previousChurned THEN 'no change'
+    WHEN totalchurned>previousChurned THEN 'increase'
+    ELSE 'decrease' END AS status
+FROM previousYear
