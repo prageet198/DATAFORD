@@ -1,0 +1,28 @@
+LEVEL:-Hard
+COMPANY:-Apple
+
+QUESTION:-You have recently joined Apple's speech recognition team and have been assigned a task to evaluate the consistency 
+across different voice-enabled device types in rendering text responses. 
+There are five distinct tables named table1, table2, table3, table4, and table5.
+
+Your objective is to write a SQL query that identifies texts that are rendered by at least three different device types.
+
+For instance, if Siri, Alexa, and Google Assistant all render the text "Hi, how is your day?" in response to a particular speech input, 
+that text should be included in your result.
+
+Solution:- In Postgre
+WITH combineData AS (
+SELECT * FROM table1
+UNION ALL
+SELECT * FROM table2
+UNION ALL
+SELECT * FROM table3
+UNION ALL
+SELECT * FROM table4
+UNION ALL
+SELECT * FROM table5
+)
+SELECT text
+FROM combineData
+GROUP BY text
+HAVING COUNT(DISTINCT device_type)>=3
