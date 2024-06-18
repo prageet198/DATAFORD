@@ -1,0 +1,21 @@
+LEVEL:-Hard
+COMPANY:-Google
+
+QUESTION:-Display the video ID(s) that have received the most reported flags. In case of a tie, include all videos with the highest number of flags. 
+Make sure that the reported flags were all reviewed.
+
+Tables are:- user_flags, flag_review 
+
+Solution:- 
+WITH datas AS (
+SELECT user_flags.video_id, COUNT(*) AS totalFlaged
+FROM user_flags INNER JOIN flag_review 
+ON user_flags.flag_id=flag_review.flag_id AND flag_review.is_reviewed='true'
+GROUP BY user_flags.video_id
+),
+ranking AS (
+SELECT *,
+RANK() OVER(ORDER BY totalFlaged DESC) AS ranked
+FROM datas
+)
+SELECT video_id FROM ranking WHERE ranked='1'
