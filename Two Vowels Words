@@ -1,0 +1,15 @@
+LEVEL:-Hard
+COMPANY:-Google
+
+QUESTION:-Retrieve all words in the table that contain exactly two vowels in any list.
+
+Table is:- google_word_lists 
+
+Solution:- In Postgre
+SELECT DISTINCT word
+FROM (
+    SELECT TRIM(UNNEST(string_to_array(words1, ','))) AS word FROM google_word_lists 
+    UNION
+    SELECT TRIM(UNNEST(string_to_array(words2, ','))) FROM google_word_lists 
+) AS all_words
+WHERE LENGTH(word) - LENGTH(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(word, 'a', ''), 'e', ''), 'i', ''), 'o', ''), 'u', '')) = 2;
