@@ -1,0 +1,57 @@
+LEVEL:-Hard
+COMPANY:-Meta
+
+QUESTION:- Meta/Facebook is developing a search algorithm for users to explore their post history. Your task is to assess its performance 
+using a table that includes the user's search term, search result positions, and whether the user clicked on the result.
+
+Write a query to assign ratings to searches as follows:
+
+    If the search wasn't clicked for any term, assign a rating of 1.
+    If the search was clicked but the top position of clicked terms was outside the top 3 positions, assign a rating of 2.
+    If the search was clicked and the top position of a clicked term was in the top 3 positions, assign a rating of 3.
+
+Since a search ID can contain multiple search terms, select the highest rating for that search ID. Output the search ID and its highest rating.
+
+Example: For search_id 1, it was clicked (clicked = 1), and its position is outside the top 3 positions (search_results_position = 5), resulting in a rating of 2.
+
+Table is:- fb_search_events
+
+Solution-1:- In Postgre
+
+WITH data AS(
+SELECT search_id,
+CASE WHEN clicked='0' THEN '1'
+     WHEN clicked='1' AND search_results_position>3 THEN '2'
+     ELSE '3' END AS rating
+FROM fb_search_events 
+)
+SELECT search_id, MAX(rating)
+FROM data
+GROUP BY search_id
+ORDER BY search_id
+
+Solution-2:- In Postgre
+WITH cte AS
+  (SELECT search_id,
+          UNNEST(array[one, two, three]) AS rating
+   FROM
+     (SELECT search_id,
+             CASE
+                 WHEN clicked = 0 THEN 1
+                 ELSE 0
+             END AS one,
+             CASE
+                 WHEN clicked = 1
+                      AND search_results_position > 3 THEN 2
+                 ELSE 0
+             END AS two,
+             CASE
+                 WHEN clicked = 1
+                      AND search_results_position <= 3 THEN 3
+                 ELSE 0
+             END AS three
+      FROM fb_search_events) a)
+SELECT search_id,
+       MAX(rating) AS max_rating
+FROM cte
+GROUP BY 1
