@@ -1,0 +1,81 @@
+LEVEL:-Hard
+COMPANY:-Deloitte
+QUESTION:-You're currently engaged in a data analysis project at Deloitte, focusing on a dataset that includes information about different cities.
+
+Your objective is to compute the population density for these cities, rounded to the nearest integer. To calculate the density, 
+use the formula (Population / Area). Additionally, identify the cities with the minimum and maximum population densities in the dataset.
+
+Table is:- cities_population 
+
+Solution-1:- In Postgre
+WITH cityDensity AS
+(
+SELECT city, country, 
+CASE WHEN area='0' THEN NULL
+ELSE (population/area) END AS density
+FROM cities_population 
+),
+minumumDenisty AS (
+SELECT city, country, density
+FROM cityDensity
+WHERE density IS NOT NULL
+ORDER BY density ASC, country DESC
+LIMIT 1
+),
+maximumDenisty AS (
+SELECT city, country, density
+FROM cityDensity
+WHERE density IS NOT NULL
+ORDER BY density DESC, country ASC
+LIMIT 1
+)
+SELECT * FROM minumumDenisty
+UNION ALL
+SELECT * FROM maximumDenisty
+
+Solution-2:- In Postgre
+WITH density AS (
+    SELECT 
+        city, 
+        country, 
+        ROUND(population / NULLIF(area, 0)) AS density
+    FROM 
+        cities_population
+    WHERE 
+        area > 0
+),
+max_density AS (
+    SELECT 
+        city, 
+        country, 
+        density
+    FROM 
+        density
+    WHERE 
+        density = (SELECT MAX(density) FROM density)
+    LIMIT 1
+),
+min_density AS (
+    SELECT 
+        city, 
+        country, 
+        density
+    FROM 
+        density
+    WHERE 
+        density = (SELECT MIN(density) FROM density)
+    LIMIT 1
+),
+combined_density AS (
+    SELECT * FROM max_density
+    UNION ALL
+    SELECT * FROM min_density
+)
+SELECT 
+    city, 
+    country, 
+    density
+FROM 
+    combined_density
+ORDER BY 
+    density ASC;
