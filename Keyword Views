@@ -1,0 +1,25 @@
+LEVEL:-Hard
+COMPANY:-Meta
+
+QUESTION:-Generate a report indicating the number of views for each keyword. Output includes the keyword and the total views, 
+with records ordered in descending order based on the highest view count.
+
+Tables are:- facebook_posts, facebook_post_views 
+
+Solution:- In Postgre
+WITH postCount AS (
+SELECT post_id, COUNT(viewer_id) AS totalView
+FROM facebook_post_views 
+GROUP BY post_id
+),
+splitKeywords AS(
+SELECT post_id, post_keywords,
+unnest(string_to_array(trim(post_keywords, '[]#'), ',')) AS word
+FROM facebook_posts
+)
+SELECT splitKeywords.word,
+COALESCE(SUM(totalView),0) AS overallView
+FROM splitKeywords LEFT JOIN postCount
+ON splitKeywords.post_id=postCount.post_id
+GROUP BY splitKeywords.word
+ORDER BY 2 DESC
