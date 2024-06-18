@@ -1,0 +1,35 @@
+LEVEL:-Hard
+COMPANY:-Airbnb
+
+QUESTION:- You're provided with a dataset of Airbnb property searches, where each search result represents a unique host. 
+Your task is to find the city with the most amenities across all their properties.
+
+Output the name of the city.
+
+Table is:- airbnb_search_details 
+
+Solution:- In Postgre
+with cleanData AS(
+SELECT city,
+regexp_replace(
+           regexp_replace(
+               regexp_split_to_table(
+                   regexp_replace(
+                       replace(amenities, '{', ''),
+                       '(".*?"|[^",]+)',
+                       '\1',
+                       'g'
+                   ),
+                   ','
+               ),
+               '"', '', 'g'
+           ),
+           '}', '', 'g'
+       ) AS elements
+FROM airbnb_search_details 
+)
+SELECT city
+FROM cleanData
+GROUP BY city,elements
+ORDER BY COUNT(*) DESC
+LIMIT 1
