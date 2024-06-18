@@ -1,0 +1,19 @@
+LEVEL:-Hard
+COMPANY:-Twitter
+
+QUESTION:-Identify the top three distinct salaries for each department. Output the department name along with the top 3 distinct salaries for each department. 
+Organize your results alphabetically by department and then by highest salary to lowest.
+
+Table is:- twitter_employee
+
+Solution:- In Postgre
+WITH departmenst AS (
+SELECT DISTINCT department,salary
+FROM twitter_employee
+),
+ranking AS (
+SELECT * ,
+ROW_NUMBER() OVER(PARTITION BY department ORDER BY salary DESC) AS ranked
+FROM departmenst
+)
+SELECT department, salary FROM ranking WHERE ranked <=3
