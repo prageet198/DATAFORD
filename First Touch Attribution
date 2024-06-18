@@ -1,0 +1,36 @@
+LEVEL:-Hard
+COMPANY:-Etsy
+
+QUESTION:-Given 2 tables, attribution and user_sessions, from Etsy, your task is to calculate the first touch attribution for each user_id that converted. 
+First touch attribution is defined as the channel with which the converted user was associated when they first discovered the website.
+
+The attribution table logs a session visit for each row, and has a conversion column. If conversion is 1, then the user converted to buying on that session. 
+The channel column represents which advertising platform the user was attributed to for that specific session.
+
+Tables are:- attribution ,user_sessions 
+
+Solution:- In Postgre
+WITH my_converted_users AS (
+SELECT DISTINCT
+    u.user_id
+FROM attribution a 
+INNER JOIN user_sessions u ON u.session_id = a.session_id
+WHERE conversion = 1),
+
+my_sessions AS (
+
+SELECT
+    my_converted_users.user_id,
+    ROW_NUMBER() OVER(PARTITION BY my_converted_users.user_id 
+    ORDER BY created_at) AS rnk,
+    attribution.channel
+FROM my_converted_users
+INNER JOIN user_sessions ON user_sessions.user_id = my_converted_users.user_id
+INNER JOIN attribution ON attribution.session_id = user_sessions.session_id
+)
+
+SELECT
+    user_id,
+    channel
+FROM my_sessions
+WHERE rnk = 1
