@@ -1,0 +1,40 @@
+LEVEL:-Hard
+COMPANY:-Meta
+
+QUESTION:- You have access to Facebook's database, containing tables related to user posts, friendships, and likes. 
+Your goal is to calculate the total number of likes made on posts by friends specifically on Fridays.
+
+Tables are:- user_posts, friendships, likes 
+
+Solution:- In Postgre
+WITH distinctFriends AS (
+    SELECT DISTINCT user_name1, user_name2
+    FROM friendships
+),
+allCombination AS (
+SELECT user_name1, user_name2 FROM distinctFriends
+    UNION ALL
+SELECT user_name2 AS user_name1, user_name1 AS user_name2 FROM distinctFriends
+),
+likedPosts AS(
+SELECT 
+        l.user_name AS likedBy, 
+        l.post_id AS postId, 
+        date_liked AS likedOn,
+        p.user_name AS postedBy
+    FROM likes l
+    JOIN user_posts p ON l.post_id = p.post_id
+),
+friendsLiked AS(
+SELECT likedPosts.likedBy, likedPosts.postId, likedPosts.likedOn
+FROM likedPosts INNER JOIN allCombination
+ON likedPosts.postedBy=allCombination.user_name1 AND likedPosts.likedBy=allCombination.user_name2
+),
+fridayLiked AS(
+SELECT * FROM friendsLiked WHERE EXTRACt(DOW FROM likedon)='5'
+)
+
+SELECT likedOn, COUNT(postid) AS totalLikes 
+FROM fridayLiked 
+GROUP BY likedOn 
+ORDER BY likedOn
