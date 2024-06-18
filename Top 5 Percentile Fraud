@@ -1,0 +1,35 @@
+LEVEL:- Hard
+COMPANY:-Netflix
+
+QUESTION:-Identify the top 5 percentile of claims from each state.
+
+Solution-1:- In Postgre
+WITH ranked_claims AS (
+    SELECT
+        policy_num,
+        state,
+        claim_cost,
+        fraud_score,
+        NTILE(100) OVER (PARTITION BY state ORDER BY fraud_score DESC) AS percentile_rank
+    FROM
+        fraud_score 
+)
+SELECT policy_num,state,claim_cost,fraud_score 
+FROM ranked_claims WHERE percentile_rank<=5
+
+Solution-2:- In Postgre
+WITH percentiles AS
+  (SELECT state,
+          PERCENTILE_CONT(0.05) within GROUP (
+                                              ORDER BY fraud_score DESC) AS percentile
+   FROM fraud_score
+   GROUP BY state)
+SELECT 
+       f.policy_num,
+       f.state,
+       f.claim_cost,
+       f.fraud_score
+FROM fraud_score f
+JOIN percentiles p 
+ON f.state = p.state
+WHERE fraud_score >= percentile
