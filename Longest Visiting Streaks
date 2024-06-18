@@ -1,0 +1,46 @@
+LEVEL:-Hard
+COMPANY:-LinkedIn
+
+QUESTION:- Given a table containing user IDs and the dates they visited the platform, the task is to identify the top 3 users with 
+the longest continuous streak of visiting the platform as of August 20, 2023. The output should include the user ID and the length of their streak. 
+In case of a tie, all users with the top 3 longest streaks should be displayed.
+
+Table is:- user_streaks 
+
+Solution:-In Postgre
+WITH previousData AS (
+SELECT user_id, date_visited,
+LAG(date_visited,1) OVER(PARTITION BY user_id ORDER BY date_visited) AS previousDay
+FROM user_streaks
+WHERE date_visited<='2023-08-20'
+),
+difference AS (
+SELECT * ,
+DATE_PART('day', date_visited -  previousDay) AS dayDifference
+FROM previousData
+),
+status AS (
+SELECT *,
+CASE WHEN daydifference=1 OR daydifference IS NULL THEN '0'
+ELSE '1' END AS statusUpdated
+FROM difference
+),
+combined AS (
+SELECT user_id, date_visited, statusUpdated,
+SUM(statusUpdated::int) OVER(PARTITION BY user_id ORDER BY date_visited) AS combinedGroup
+FROM status),
+calculation AS (
+SELECT user_id, combinedGroup,
+COUNT(*) AS streakLength
+FROM combined
+GROUP BY user_id, combinedGroup
+ORDER BY COUNT(*) DESC
+),
+ranking AS (
+SELECT user_id, streakLength,
+DENSE_RANK() OVER (ORDER BY streakLength DESC) AS ranked
+FROM calculation
+)
+SELECT user_id, streakLength
+FROM ranking
+WHERE ranked <=3
